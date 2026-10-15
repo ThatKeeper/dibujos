@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
+    >
+
+    <title>Dibujo</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div id="app">
+
+        <header>
+            <button class="b" id="bFile" title="Archivo (Ctrl+S)">
+                ☰ Archivo
+            </button>
+
+            <input
+                type="text"
+                id="nm"
+                value="dibujo"
+                style="width: 110px"
+                aria-label="Nombre"
+            >
+
+            <button class="b" id="bUn" title="Deshacer (Ctrl+Z)">↶</button>
+            <button class="b" id="bRe" title="Rehacer (Ctrl+Shift+Z)">↷</button>
+
+            <button class="b" id="zo">−</button>
+            <span id="zl" style="min-width: 42px; text-align: center">100%</span>
+            <button class="b" id="zi">+</button>
+
+            <button class="b" id="zf" title="Ajustar (Ctrl+0)">⤢</button>
+
+            <button class="b" id="bP" title="Capas y paleta (Tab)">
+                ▤ Capas
+            </button>
+        </header>
+
+        <div id="opts">
+            <input
+                type="color"
+                id="col"
+                value="#111111"
+                aria-label="Color"
+            >
+
+            <label>Tamaño</label>
+
+            <input
+                type="range"
+                id="sz"
+                min="1"
+                max="120"
+                value="6"
+                style="width: 110px"
+            >
+
+            <b id="szv" style="min-width: 22px">6</b>
+
+            <label>Opacidad</label>
+
+            <input
+                type="range"
+                id="op"
+                min="5"
+                max="100"
+                value="100"
+                style="width: 90px"
+            >
+
+            <b id="opv" style="min-width: 34px">100</b>
+
+            <button class="b sm" id="tFill" title="Formas rellenas">
+                ▣ Relleno
+            </button>
+
+            <button class="b sm" id="tSym" title="Simetría vertical (M)">
+                ⇋ Simetría
+            </button>
+
+            <button class="b sm" id="tGrid" title="Cuadrícula pixel">
+                ▦ Cuadrícula
+            </button>
+        </div>
+
+        <div id="tools">
+            <button class="b" data-t="brush" title="Pincel (B)">✏️</button>
+            <button class="b" data-t="eraser" title="Borrador (E)">🧽</button>
+            <button class="b" data-t="fill" title="Relleno (G)">🪣</button>
+            <button class="b" data-t="pick" title="Cuentagotas (I)">💧</button>
+            <button class="b" data-t="line" title="Línea (L) · Shift = recta">╱</button>
+            <button class="b" data-t="rect" title="Rectángulo (R) · Shift = cuadrado">▭</button>
+            <button class="b" data-t="ellipse" title="Elipse (O) · Shift = círculo">◯</button>
+            <button class="b" data-t="hand" title="Mover vista (H / Espacio)">✋</button>
+        </div>
+
+        <main>
+            <div id="cw">
+                <canvas id="view"></canvas>
+            </div>
+
+            <div id="panel">
+                <h4>Paleta</h4>
+                <div id="pal"></div>
+
+                <h4>Recientes</h4>
+                <div id="rec"></div>
+
+                <h4>Relleno · tolerancia</h4>
+
+                <input
+                    type="range"
+                    id="tol"
+                    min="0"
+                    max="128"
+                    value="32"
+                    style="width: 100%"
+                >
+
+                <h4>Capas</h4>
+
+                <div class="row" style="margin-bottom: 6px">
+                    <button class="b sm" id="lA" title="Nueva capa">＋</button>
+                    <button class="b sm" id="lD" title="Duplicar">⧉</button>
+                    <button class="b sm" id="lU" title="Subir">▲</button>
+                    <button class="b sm" id="lW" title="Bajar">▼</button>
+                    <button class="b sm" id="lC" title="Vaciar capa (Supr)">⌫</button>
+                    <button class="b sm" id="lX" title="Eliminar">🗑</button>
+                </div>
+
+                <label>Opacidad de capa</label>
+
+                <input
+                    type="range"
+                    id="lo"
+                    min="0"
+                    max="100"
+                    value="100"
+                    style="width: 100%"
+                >
+
+                <div id="ll"></div>
+
+                <p style="font-size: 11px; color: var(--mut)">
+                    Doble toque en una capa para renombrar. Con Apple Pencil,
+                    los dedos mueven y hacen zoom; toca con dos dedos para deshacer.
+                </p>
+            </div>
+        </main>
+    </div>
+
+    <dialog id="dF">
+        <button class="b" id="bNew">📄 Nuevo lienzo…</button>
+        <button class="b" id="bOpen">📂 Abrir archivo (.json / imagen)</button>
+        <button class="b" id="bPng">🖼 Descargar PNG</button>
+        <button class="b" id="bJson">💾 Descargar proyecto (capas)</button>
+
+        <hr style="border: 0; border-top: 1px solid var(--bd)">
+
+        <button class="b" id="bDs">☁️ Guardar en Google Drive</button>
+        <button class="b" id="bDo">☁️ Abrir desde Google Drive</button>
+
+        <label>Client ID de Google (OAuth, tipo Web)</label>
+
+        <input
+            type="text"
+            id="cid"
+            style="width: 100%; box-sizing: border-box; margin: 4px 0"
+            placeholder="xxxx.apps.googleusercontent.com"
+        >
+
+        <div id="dmsg" style="font-size: 12px; color: var(--mut)"></div>
+        <div id="dl"></div>
+
+        <button
+            class="b"
+            onclick="this.closest('dialog').close()"
+            style="margin-top: 8px"
+        >
+            Cerrar
+        </button>
+    </dialog>
+
+    <dialog id="dN">
+        <label>Tamaño</label>
+        <br>
+
+        <select
+            id="pre"
+            style="width: 100%; margin: 4px 0 8px"
+        >
+            <option value="1024,768,0">1024 × 768</option>
+            <option value="1920,1080,0">1920 × 1080</option>
+            <option value="2048,1536,0">2048 × 1536</option>
+
+            <option value="32,32,1">Pixel art 32 × 32</option>
+            <option value="64,64,1">Pixel art 64 × 64</option>
+            <option value="128,128,1">Pixel art 128 × 128</option>
+            <option value="256,256,1">Pixel art 256 × 256</option>
+        </select>
+
+        <div class="row">
+            <input
+                type="number"
+                id="nw"
+                value="1024"
+                min="1"
+                max="4096"
+                style="width: 80px"
+            >
+
+            <span>×</span>
+
+            <input
+                type="number"
+                id="nh"
+                value="768"
+                min="1"
+                max="4096"
+                style="width: 80px"
+            >
+
+            <label style="display: flex; align-items: center; gap: 4px">
+                <input type="checkbox" id="npx">
+                pixel art
+            </label>
+        </div>
+
+        <button
+            class="b"
+            id="nOk"
+            style="margin-top: 12px; text-align: center"
+        >
+            Crear
+        </button>
+
+        <button
+            class="b"
+            onclick="this.closest('dialog').close()"
+            style="text-align: center"
+        >
+            Cancelar
+        </button>
+    </dialog>
+
+    <input type="file" id="fi" accept=".json,image/*" hidden>
+
+    <div id="toast"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>
